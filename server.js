@@ -2,6 +2,8 @@ const http = require('http');
 const fs = require('fs')
 const _ = require('lodash')
 
+// used before express, spend more time with lodash 
+
 const server = http.createServer((requestObj, responseObj) => {
 
     // lodash
