@@ -1,4 +1,7 @@
+// https://www.youtube.com/watch?v=_GJKAs7A0_4
+
 const express = require('express')
+const morgan = require('morgan')
 
 // express app
 
@@ -9,6 +12,11 @@ app.set('view engine', 'ejs')
 
 //listen for requests
 app.listen(3000);
+
+app.use(morgan('dev'))
+
+// middleware & static files
+app.use(express.static('public'))
 
 app.get('/', (req, res) => {
     // res.send('<p>home page</p>')
@@ -34,7 +42,7 @@ app.get('/about-us', (req, res) => {
     res.redirect('/about')
 })
 
-// 404 pages MUST GO AT THE BOTTOM
+// 404 pages MUST GO AT THE BOTTOM used as a catch all
 app.use((req, res) => {
     res.status(404).render('404', { title: '404' })
 })
