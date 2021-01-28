@@ -3,9 +3,7 @@
 const express = require('express')
 const morgan = require('morgan')
 const mongoose = require('mongoose')
-const Blog = require('./models/blog')
-const { render } = require('ejs')
-const { result } = require('lodash')
+const blogRoutes = require('./routes/blogRoutes')
 require('dotenv/config')
 const user = process.env.DB_USER
 const password = process.env.DB_PASSWORD
@@ -30,35 +28,6 @@ app.use(express.static('public'))
 app.use(express.urlencoded({ extended: true }))
 app.use(morgan('dev'))
 
-// mongoose and mogo sandbox routes
-// app.get('/add-blog', (req, res) => {
-//     const blog = new Blog({
-//         title: 'new blog 2',
-//         snippet: 'about this new blog',
-//         body: 'heres more information about this blog'
-//     })
-
-//     blog.save()
-//         .then((result) => {
-//             res.send(result)
-//         })
-//         .catch((err) => console.log(err))
-// })
-
-// app.get('/all-blogs', (req, res) => {
-//     Blog.find()
-//         .then((results) => res.send(results))
-//         .catch((err) => console.log(err))
-// })
-
-// app.get('/single-blog', (req, res) => {
-//     Blog.findById('601044e2914de8cb4e8232e4')
-//         .then((result) => {
-//             res.send(result)
-//         })
-//         .catch((err) => console.log(err))
-// })
-
 // middleware & static files
 app.use(express.static('public'))
 
@@ -72,48 +41,14 @@ app.get('/about', (req, res) => {
     res.render('about', { title: 'About' })
 })
 
-app.get('/blogs/create', (req, res) => {
-    res.render('create', { title: 'Create' })
-})
-
 // redirects
 app.get('/about-us', (req, res) => {
     res.redirect('/about')
 })
 
-// blog routes
-app.get('/blogs', (req, res) => {
-    Blog.find().sort({ createdAt: -1 })
-        .then(result => res.render('index', { title: 'All Blogs', blogs: result }))
-        .catch(err => console.log(err))
-})
+//blog routes
+app.use('/blogs', blogRoutes)
 
-app.post('/blogs', (req, res) => {
-    const blog = new Blog(req.body)
-    blog.save()
-        .then(result => res.redirect('/blogs'))
-        .catch(err => console.log(err))
-})
-
-app.get('/blogs/:id', (req, res) => {
-    const id = req.params.id
-    Blog.findById(id)
-        .then(result => res.render('details', { blog: result, title: "Blog Details" }))
-        .catch(err => console.log(err))
-})
-
-app.delete('/blogs/:id', (req, res) => {
-    const id = req.params.id
-    Blog.findByIdAndDelete(id)
-        .then(result => {
-            res.json({ redirect: '/blogs' })
-        })
-        .catch(err => console.log(err))
-})
-
-app.get('/blogs/create', (req, res) => {
-    res.render('create', { title: 'Create a new blog' });
-})
 
 // 404 pages MUST GO AT THE BOTTOM used as a catch all
 app.use((req, res) => {
@@ -146,4 +81,33 @@ app.use((req, res) => {
 // // 404 pages MUST GO AT THE BOTTOM
 // app.use((req, res) => {
 //     res.status(404).sendFile('./views/404.html', { root: __dirname })
+// })
+
+// mongoose and mogo sandbox routes
+// app.get('/add-blog', (req, res) => {
+//     const blog = new Blog({
+//         title: 'new blog 2',
+//         snippet: 'about this new blog',
+//         body: 'heres more information about this blog'
+//     })
+
+//     blog.save()
+//         .then((result) => {
+//             res.send(result)
+//         })
+//         .catch((err) => console.log(err))
+// })
+
+// app.get('/all-blogs', (req, res) => {
+//     Blog.find()
+//         .then((results) => res.send(results))
+//         .catch((err) => console.log(err))
+// })
+
+// app.get('/single-blog', (req, res) => {
+//     Blog.findById('601044e2914de8cb4e8232e4')
+//         .then((result) => {
+//             res.send(result)
+//         })
+//         .catch((err) => console.log(err))
 // })
